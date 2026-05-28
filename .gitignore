@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Caches
+.pytest_cache/
+.mypy_cache/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Local runtime artifacts
+artifacts/models/
+artifacts/metrics/
+artifacts/figures/
+
+# Local raw data (if later decide not to push all through git)
+# data/raw/
+# data/interim/
+# data/processed/
