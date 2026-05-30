@@ -30,9 +30,9 @@ build/
 *.egg-info/
 
 # Local runtime artifacts
-artifacts/models/
-artifacts/metrics/
-artifacts/figures/
+#artifacts/models/
+#artifacts/metrics/
+#artifacts/figures/
 
 # Local raw data (if later decide not to push all through git)
 # data/raw/
