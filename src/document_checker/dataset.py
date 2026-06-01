@@ -11,6 +11,16 @@ class DocumentSample:
     label: str
     split: str
 
+@dataclass(frozen=True)
+class DatasetPathCheckResult:
+    """Validation result for one dataset index row."""
+
+    path: Path
+    exists: bool
+    is_file: bool
+    label: str | None = None
+    split: str | None = None   
+
 
 def scan_split(split_dir: Path) -> list[DocumentSample]:
     """Scan a single split directory (e.g. train or val) and collect samples.
@@ -134,3 +144,91 @@ def load_dataset_index(index_path: Path | str = Path("artifacts/metrics/dataset_
         raise ValueError(f"Index file is missing columns: {missing}")
 
     return df
+
+
+def check_dataset_path(
+    path: Path | str,
+    label: str | None = None,
+    split: str | None = None,
+) -> DatasetPathCheckResult:
+    """Validate one dataset file path."""
+
+    path = Path(path)
+
+    return DatasetPathCheckResult(
+        path=path,
+        exists=path.exists(),
+        is_file=path.is_file(),
+        label=label,
+        split=split,
+    )
+
+
+def check_dataset_paths(df: pd.DataFrame) -> pd.DataFrame:
+    """Validate dataset paths from an index DataFrame."""
+
+    results = []
+
+    for _, row in df.iterrows():
+        result = check_dataset_path(
+            path=row["path"],
+            label=row.get("label"),
+            split=row.get("split"),
+        )
+        results.append(
+            {
+                "path": str(result.path),
+                "exists": result.exists,
+                "is_file": result.is_file,
+                "label": result.label,
+                "split": result.split,
+            }
+        )
+
+    return pd.DataFrame(results)
+
+def subset_by_split_and_limit(
+    df: pd.DataFrame,
+    split: str = "train",
+    n_per_label: int | None = None,
+    random_state: int | None = 42,
+) -> pd.DataFrame:
+    """Filter dataset index by split and optional per-label limit.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataset index with columns: path, label, split.
+    split : str, optional
+        Split name to keep (e.g. "train", "val"). Default is "train".
+    n_per_label : int or None, optional
+        If provided, limit to at most n_per_label samples per label for the
+        given split. If None, keep all samples for the split.
+    random_state : int or None, optional
+        Random seed used when sampling per label. Default is 42.
+
+    Returns
+    -------
+    pd.DataFrame
+        Filtered DataFrame.
+    """
+    filtered = df[df["split"] == split].copy()
+
+    if n_per_label is None:
+        return filtered
+
+    def _sample_group(group: pd.DataFrame) -> pd.DataFrame:
+        if len(group) <= n_per_label:
+            return group
+        return group.sample(n=n_per_label, random_state=random_state)
+
+    grouped = filtered.groupby("label", group_keys=False)
+    subset_parts: list[pd.DataFrame] = []
+
+    for _, group in grouped:
+        sampled = _sample_group(group)
+        subset_parts.append(sampled)
+
+    subset = pd.concat(subset_parts, ignore_index=True)
+
+    return subset
