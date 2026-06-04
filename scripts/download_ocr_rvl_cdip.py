@@ -2,14 +2,13 @@
 from __future__ import annotations
 
 import shutil
+import subprocess
 import sys
 import zipfile
 from pathlib import Path
-from urllib.request import urlretrieve
 
 
 FILE_ID = "1OxRYccKmPpnJEAIAMEQ_R4AnvDrjHUf3"
-DOWNLOAD_URL = f"https://drive.google.com/uc?export=download&id={FILE_ID}"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
@@ -30,10 +29,31 @@ def validate_dataset() -> None:
         raise FileNotFoundError(f"Missing directory: {TARGET_IMAGES}")
 
 
+def ensure_gdown() -> None:
+    if shutil.which("gdown") is not None:
+        return
+
+    print("gdown is not installed. Installing with pip...")
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "gdown"],
+        check=True,
+    )
+
+
 def download_archive() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    ensure_gdown()
+
     print(f"Downloading archive from Google Drive to: {ARCHIVE_PATH}")
-    urlretrieve(DOWNLOAD_URL, ARCHIVE_PATH)
+    subprocess.run(
+        [
+            "gdown",
+            FILE_ID,
+            "-O",
+            str(ARCHIVE_PATH),
+        ],
+        check=True,
+    )
 
 
 def unpack_archive() -> None:
