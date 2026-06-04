@@ -38,3 +38,7 @@ build/
 # data/raw/
 # data/interim/
 # data/processed/
+
+# Local large datasets (not tracked in git)
+data/ocr_rvl_cdip/
+data/ocr_rvl_cdip.zip
