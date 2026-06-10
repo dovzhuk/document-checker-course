@@ -78,7 +78,7 @@
 - `scripts/` — вспомогательные скрипты:
   - для малого корпуса: индексация, инспекция и проверки путей (`save_dataset_index.py`, `inspect_dataset_index.py`, `check_load_dataset_index.py`, `check_dataset_paths.py`, `check_dataset_paths_batch.py`, `test_subset_dataset.py`);
   - для OCR: прогоны Tesseract на выборках, подготовка списка для ручной разметки и расчёт OCR‑метрик (`run_single_tesseract_sample.py`, `run_tesseract_batch_sample.py`, `run_tesseract_three_configs_batch.py`, `prepare_manual_annotation_list.py`, `test_ocr_metrics.py`, `evaluate_ocr_engines.py`);
-  - для большого корпуса: импорт и подготовка `ocr_rvl_cdip` (`import_ocr_rvl_cdip.py`, `import_ocr_rvl_cdip_v2.py`, `download_ocr_rvl_cdip.py`);
+  - для большого корпуса: импорт и подготовка `ocr_rvl_cdip` (`import_ocr_rvl_cdip_v2.py`, `download_ocr_rvl_cdip.py`);
   - `run_fastapi_app.py` — запуск FastAPI‑backend поверх существующего пайплайна.
 - `tests/` — unit- и integration‑тесты для ключевых компонентов: `document_pipeline`, обёртки моделей и FastAPI‑приложение.
 - `reports/` — итоговый отчёт и вспомогательные материалы (структура задаётся отдельным `report_draft_structure.md`).
@@ -140,7 +140,7 @@ data/ocr_rvl_cdip/
 Архив доступен по ссылке:
 
 ```text
-https://drive.google.com/file/d/1OxRYccKmPpnJEAIAMEQ_R4AnvDrjHUf3/view?usp=sharing
+https://drive.google.com/file/d/1NZHeYcX1yWXd5IK9_H_olQS21V-9pQD3/view?usp=drive_link
 ```
 
 Локальная подготовка:
