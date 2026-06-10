@@ -4,9 +4,9 @@
 
 ## Идея проекта
 
-Система принимает изображение документа или PDF, извлекает текст с помощью OCR, обрабатывает его и применяет модель машинного обучения для получения итогового результата.
+Система принимает изображение документа или PDF, извлекает текст с помощью OCR, обрабатывает его и применяет модель машинного обучения для получения итогового результата.  
 
-Основная прикладная задача — классификация типа документа по тексту, полученному после OCR (например, `invoice`, `resume`, `email`, `form` и т.д.).
+Основная прикладная задача — классификация типа документа по тексту, полученному после OCR (например, invoice, resume, email, form и т.д.).
 
 ## Цели
 
@@ -34,9 +34,6 @@
 │   └── ocr_eval/            # Результаты сравнения OCR и ручная разметка
 ├── data/
 │   ├── raw/                 # Исходные данные (малый корпус RVL‑CDIP‑small‑200)
-│   ├── interim/             # Промежуточные данные
-│   ├── processed/           # Подготовленные данные для обучения
-│   ├── ocr_eval/            # Данные для оценки OCR
 │   └── ocr_rvl_cdip/        # Основной OCR‑корпус для классификации документов
 ├── notebooks/
 │   └── document_classification_baseline.ipynb
@@ -48,41 +45,86 @@
 └── tests/                   # Unit- и integration-тесты
 ```
 
-### Основные директории
+## Основные директории
 
-- `data/` — данные проекта:
-  - `raw/` — исходные файлы малого корпуса RVL‑CDIP‑small‑200 (стенд для OCR‑экспериментов).
-  - `interim/` — промежуточные данные.
-  - `processed/` — зарезервировано под подготовленные данные для обучения.
-  - `ocr_eval/` — вспомогательные данные и выборки для оценки OCR.
-  - `ocr_rvl_cdip/` — основной корпус для OCR и классификации документов (результат OCR по крупной выборке RVL‑CDIP).
-- `notebooks/`:
-  - `document_classification_baseline.ipynb` — основной ноутбук с EDA, OCR‑исследованием и базовым текстовым pipeline.
-- `src/document_checker/`:
-  - `dataset.py` — работа с малым корпусом RVL‑CDIP‑small‑200: индексация, загрузка, выборки, проверки путей.
-  - `ocr/` — запуск и обёртки OCR (Tesseract через `pytesseract`), метрики качества OCR (character/word accuracy, Levenshtein, WER).
-  - `preprocessing/` — предобработка и очистка текста.
-  - `features/` — извлечение признаков (например, TF‑IDF).
-  - `models/` — обучение и инференс текстовых моделей, включая загрузку сохранённых артефактов.
-  - `pipeline/` — документ‑ориентированный pipeline: документ → OCR → обработка текста → предсказание.
-  - `api/` — слой FastAPI поверх `document_pipeline` для демонстрации backend‑интерфейса.
-- `apps/streamlit/`:
-  - `app.py` — Streamlit‑интерфейс для локальной демонстрации пайплайна.
-- `artifacts/`:
-  - `models/`:
-    - `text_tfidf_logreg.joblib` — базовый пайплайн TF‑IDF + Logistic Regression.
-    - `text_tfidf_linearsvc.joblib` — улучшенный пайплайн SimpleTextCleaner → TF‑IDF → LinearSVC.
-  - `metrics/` — артефакты с метриками и служебными индексами (например, индекс малого корпуса).
-  - `figures/` — графики и визуализации для отчёта и презентации.
-  - `ocr_eval/` — результаты сравнения OCR‑конфигураций и ручная разметка ground truth для оценки OCR.
-- `scripts/` — вспомогательные скрипты:
-  - для малого корпуса: индексация, инспекция и проверки путей (`save_dataset_index.py`, `inspect_dataset_index.py`, `check_load_dataset_index.py`, `check_dataset_paths.py`, `check_dataset_paths_batch.py`, `test_subset_dataset.py`);
-  - для OCR: прогоны Tesseract на выборках, подготовка списка для ручной разметки и расчёт OCR‑метрик (`run_single_tesseract_sample.py`, `run_tesseract_batch_sample.py`, `run_tesseract_three_configs_batch.py`, `prepare_manual_annotation_list.py`, `test_ocr_metrics.py`, `evaluate_ocr_engines.py`);
-  - для большого корпуса: импорт и подготовка `ocr_rvl_cdip` (`import_ocr_rvl_cdip_v2.py`, `download_ocr_rvl_cdip.py`);
-  - `run_fastapi_app.py` — запуск FastAPI‑backend поверх существующего пайплайна.
-- `tests/` — unit- и integration‑тесты для ключевых компонентов: `document_pipeline`, обёртки моделей и FastAPI‑приложение.
-- `reports/` — итоговый отчёт и вспомогательные материалы (структура задаётся отдельным `report_draft_structure.md`).
-- `slides/` — итоговая презентация (PPTX/HTML) и вспомогательные файлы.
+### `data/` — данные проекта
+
+- `raw/` — исходные файлы малого корпуса RVL‑CDIP‑small‑200 (стенд для OCR‑экспериментов).
+- `ocr_rvl_cdip/` — основной корпус для OCR и классификации документов (результат OCR по крупной выборке RVL‑CDIP).
+
+### `notebooks/`
+
+- `document_classification_baseline.ipynb` — основной ноутбук с EDA, OCR‑исследованием и базовым текстовым pipeline.
+
+### `src/document_checker/`
+
+- `dataset.py` — работа с малым корпусом RVL‑CDIP‑small‑200: индексация, загрузка, выборки, проверки путей.
+- `ocr/` — запуск и обёртки OCR (Tesseract через `pytesseract`), метрики качества OCR (character/word accuracy, Levenshtein, WER).
+- `preprocessing/` — предобработка и очистка текста.
+- `features/` — задел под извлечение признаков (например, TF‑IDF).
+- `models/` — обучение и инференс текстовых моделей, включая загрузку сохранённых артефактов.
+- `pipeline/` — документ‑ориентированный pipeline: документ → OCR → обработка текста → предсказание.
+- `api/` — слой FastAPI поверх `document_pipeline` для демонстрации backend‑интерфейса.
+
+### `apps/streamlit/`
+
+- `app.py` — Streamlit‑интерфейс для локальной демонстрации пайплайна.
+
+### `artifacts/`
+
+- `models/`:
+  - `text_tfidf_logreg.joblib` — базовый пайплайн TF‑IDF + Logistic Regression.
+  - `text_tfidf_linearsvc.joblib` — улучшенный пайплайн SimpleTextCleaner → TF‑IDF → LinearSVC.
+- `metrics/` — артефакты с метриками и служебными индексами (например, индекс малого корпуса).
+- `figures/` — графики и визуализации для отчёта и презентации.
+- `ocr_eval/` — результаты сравнения OCR‑конфигураций и ручная разметка ground truth для оценки OCR.
+
+### `scripts/` — вспомогательные скрипты
+
+Для малого корпуса: индексация, инспекция и проверки путей:
+
+- `save_dataset_index.py`
+- `inspect_dataset_index.py`
+- `check_load_dataset_index.py`
+- `check_dataset_paths.py`
+- `check_dataset_paths_batch.py`
+- `test_subset_dataset.py`
+
+Для OCR: прогоны Tesseract на выборках, подготовка списка для ручной разметки и расчёт OCR‑метрик:
+
+- `run_single_tesseract_sample.py`
+- `run_tesseract_batch_sample.py`
+- `run_tesseract_three_configs_batch.py`
+- `prepare_manual_annotation_list.py`
+- `test_ocr_metrics.py`
+- `evaluate_ocr_engines.py`
+
+Для большого корпуса: импорт и подготовка `ocr_rvl_cdip`:
+
+- `import_ocr_rvl_cdip_v2.py`
+- `download_ocr_rvl_cdip.py`
+
+Прочее:
+
+- `run_fastapi_app.py` — запуск FastAPI‑backend поверх существующего пайплайна.
+- `demo_document_pipeline.py` — CLI‑демо end‑to‑end пайплайна.
+
+### `tests/`
+
+Unit- и integration‑тесты для ключевых компонентов: `document_pipeline`, обёрток моделей и FastAPI‑приложения.
+
+- `test_document_pipeline.py`
+- `test_text_classifier.py`
+- `test_fastapi_app.py`
+- `conftest.py`
+
+### `reports/`
+
+Итоговый отчёт и вспомогательные материалы (структура задаётся отдельным `report_draft_structure.md` при необходимости).
+
+### `slides/`
+
+Итоговая презентация (PPTX/HTML‑слайды) и вспомогательные файлы.
 
 ## Датасет `ocr_rvl_cdip`
 
@@ -133,15 +175,12 @@ data/ocr_rvl_cdip/
 
 остались теми же. Это позволяет использовать одни и те же ноутбуки и код поверх новой версии корпуса без изменения путей и схем.
 
-## Подготовка датасета
+### Подготовка датасета
 
 Полный датасет `ocr_rvl_cdip` не хранится в Git, так как это крупный локальный артефакт. Для удобства он размещён отдельным архивом.
 
-Архив доступен по ссылке:
-
-```text
-https://drive.google.com/file/d/1NZHeYcX1yWXd5IK9_H_olQS21V-9pQD3/view?usp=drive_link
-```
+Архив доступен по ссылке:  
+<https://drive.google.com/file/d/1NZHeYcX1yWXd5IK9_H_olQS21V-9pQD3/view?usp=drive_link>
 
 Локальная подготовка:
 
@@ -151,14 +190,13 @@ python scripts/download_ocr_rvl_cdip.py
 
 Скрипт:
 
-1. Проверяет наличие `data/ocr_rvl_cdip/ocr_dataset.csv` и `data/ocr_rvl_cdip/images_tif`.
-2. При отсутствии датасета:
-   - скачивает архив `ocr_rvl_cdip.zip` с Google Drive с помощью `gdown`;
-   - распаковывает его в каталог `data/`;
-   - при необходимости запускает `scripts/import_ocr_rvl_cdip_v2.py` для конвертации PNG → TIFF и сборки `ocr_dataset.csv`.
-3. Валидирует наличие итогового `ocr_dataset.csv` и каталога `images_tif`.
-
-Если датасет уже присутствует локально, повторная загрузка не выполняется.
+- проверяет наличие `data/ocr_rvl_cdip/ocr_dataset.csv` и `data/ocr_rvl_cdip/images_tif`;
+- при отсутствии датасета:
+  - скачивает архив `ocr_rvl_cdip.zip` с Google Drive с помощью `gdown`;
+  - распаковывает его в каталог `data/`;
+  - при необходимости запускает `scripts/import_ocr_rvl_cdip_v2.py` для конвертации PNG → TIFF и сборки `ocr_dataset.csv`;
+- валидирует наличие итогового `ocr_dataset.csv` и каталога `images_tif`;
+- если датасет уже присутствует локально, повторная загрузка не выполняется.
 
 ## OCR‑часть
 
@@ -175,7 +213,9 @@ OCR‑слой реализован на базе Tesseract (через `pytesse
 
 Для малого корпуса `data/raw/rvl-cdip-small-200` используются скрипты:
 
-- `run_single_tesseract_sample.py`, `run_tesseract_batch_sample.py`, `run_tesseract_three_configs_batch.py` — прогоны OCR по выборкам и конфигурациям;
+- `run_single_tesseract_sample.py`
+- `run_tesseract_batch_sample.py`
+- `run_tesseract_three_configs_batch.py` — прогоны OCR по выборкам и конфигурациям;
 - `prepare_manual_annotation_list.py` — формирование списка документов для ручной разметки ground truth;
 - `evaluate_ocr_engines.py` — расчёт метрик OCR по ручной разметке и сравнение конфигураций Tesseract;
 - `test_ocr_metrics.py` — локальная проверка корректности OCR‑метрик.
@@ -255,7 +295,7 @@ poetry run python scripts/run_fastapi_app.py
 
 Это поднимает FastAPI‑приложение, которое использует `document_pipeline` и модельные обёртки для обработки загруженных документов.
 
-## Тесты
+### Тесты
 
 Для ключевых компонентов реализован набор unit- и integration‑тестов (`tests/`), покрывающих:
 
