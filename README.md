@@ -192,7 +192,7 @@ python scripts/download_ocr_rvl_cdip.py
 
 - проверяет наличие `data/ocr_rvl_cdip/ocr_dataset.csv` и `data/ocr_rvl_cdip/images_tif`;
 - при отсутствии датасета:
-  - скачивает архив `ocr_rvl_cdip.zip` с Google Drive с помощью `gdown`;
+  - скачивает архив `ocr_dataset_v2.zip` с Google Drive с помощью `gdown`;
   - распаковывает его в каталог `data/`;
   - при необходимости запускает `scripts/import_ocr_rvl_cdip_v2.py` для конвертации PNG → TIFF и сборки `ocr_dataset.csv`;
 - валидирует наличие итогового `ocr_dataset.csv` и каталога `images_tif`;
